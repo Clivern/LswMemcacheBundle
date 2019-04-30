@@ -6,11 +6,16 @@ php:
 
 services:
    - memcached
-
+   
 env:
    - COMPOSER_MEMORY_LIMIT=-1
+   - PECL_MEMCACHE=memcache-3.0.6
+   - PECL_MEMCACHE=memcache-3.0.8
 
 before_script:
+   - sh -c 'if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then yes "" | pecl install -f "$PECL_MEMCACHE"; fi;'
+   # Need to activate memchached extension explictly to work with all versions.
+   - sh -c 'if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then phpenv config-add .travis-php.ini; fi;'
    - composer install --no-interaction
 
 script:
